@@ -58,7 +58,10 @@
 
     statusEl.textContent = payload.status === 'playing' ? 'Now playing' : 'Last played';
     trackEl.textContent = track.name || '';
-    artistEl.textContent = (track.artists || []).join(', ');
+    artistEl.textContent = [
+      (track.artists || []).join(', '),
+      track.releaseYear || ''
+    ].filter(Boolean).join(' / ');
     linkEl.href = track.trackUrl || '';
     linkEl.style.display = track.trackUrl ? 'inline-flex' : 'none';
 

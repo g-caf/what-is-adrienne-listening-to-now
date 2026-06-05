@@ -47,15 +47,20 @@ function formatSpotifyTrack(item, isPlaying = false) {
   if (!item) return null;
 
   const artists = (item.artists || []).map((artist) => artist.name).filter(Boolean);
+  const album = item.album || {};
   const albumImages = item.album && Array.isArray(item.album.images) ? item.album.images : [];
   const albumImage = albumImages[0] ? albumImages[0].url : '';
+  const releaseDate = album.release_date || '';
+  const releaseYear = releaseDate.match(/^\d{4}/) ? releaseDate.slice(0, 4) : '';
 
   return {
     id: item.id,
     name: item.name,
     artists,
-    album: item.album ? item.album.name : '',
+    album: album.name || '',
     albumImage,
+    releaseDate,
+    releaseYear,
     trackUrl: item.external_urls ? item.external_urls.spotify : '',
     isPlaying,
     durationMs: item.duration_ms || 0,
