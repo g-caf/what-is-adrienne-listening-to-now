@@ -45,6 +45,7 @@ async function getSpotifyAccessToken() {
 
 function formatSpotifyTrack(item, isPlaying = false) {
   if (!item) return null;
+  if (item.type && item.type !== 'track') return null;
 
   const artists = (item.artists || []).map((artist) => artist.name).filter(Boolean);
   const album = item.album || {};
@@ -68,6 +69,21 @@ function formatSpotifyTrack(item, isPlaying = false) {
   };
 }
 
+async function fetchRecentlyPlayedTrack(headers) {
+  const recentRes = await fetch(`${SPOTIFY_API_URL}/me/player/recently-played?limit=1`, { headers });
+  if (!recentRes.ok) return { status: 'offline' };
+
+  const recentData = await recentRes.json();
+  const recentItem = recentData.items && recentData.items[0] ? recentData.items[0] : null;
+  const track = recentItem ? formatSpotifyTrack(recentItem.track, false) : null;
+
+  return {
+    status: track ? 'recent' : 'offline',
+    track,
+    playedAt: recentItem ? recentItem.played_at : null
+  };
+}
+
 async function fetchSpotifyNowPlaying() {
   const accessToken = await getSpotifyAccessToken();
   if (!accessToken) return { status: 'unauthorized' };
@@ -76,17 +92,7 @@ async function fetchSpotifyNowPlaying() {
   const nowPlayingRes = await fetch(`${SPOTIFY_API_URL}/me/player/currently-playing`, { headers });
 
   if (nowPlayingRes.status === 204) {
-    const recentRes = await fetch(`${SPOTIFY_API_URL}/me/player/recently-played?limit=1`, { headers });
-    if (!recentRes.ok) return { status: 'offline' };
-
-    const recentData = await recentRes.json();
-    const recentItem = recentData.items && recentData.items[0] ? recentData.items[0] : null;
-
-    return {
-      status: recentItem ? 'recent' : 'offline',
-      track: recentItem ? formatSpotifyTrack(recentItem.track, false) : null,
-      playedAt: recentItem ? recentItem.played_at : null
-    };
+    return fetchRecentlyPlayedTrack(headers);
   }
 
   if (!nowPlayingRes.ok) {
@@ -96,8 +102,12 @@ async function fetchSpotifyNowPlaying() {
   const nowPlayingData = await nowPlayingRes.json();
   const track = formatSpotifyTrack(nowPlayingData.item, !!nowPlayingData.is_playing);
 
+  if (!track) {
+    return fetchRecentlyPlayedTrack(headers);
+  }
+
   return {
-    status: track ? 'playing' : 'offline',
+    status: 'playing',
     track,
     progressMs: nowPlayingData.progress_ms || 0
   };

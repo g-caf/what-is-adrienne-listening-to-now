@@ -9,8 +9,14 @@
   const linkEl = spotifyCard.querySelector('[data-spotify-link]');
   const embedEl = document.querySelector('[data-spotify-embed]');
   let currentEmbedTrackId = '';
+  let hasRenderedTrack = false;
 
-  function renderFallback(message) {
+  function renderFallback(message, preserveRenderedTrack) {
+    if (preserveRenderedTrack && hasRenderedTrack) {
+      statusEl.textContent = 'Last played';
+      return;
+    }
+
     statusEl.textContent = message;
     trackEl.textContent = '';
     artistEl.textContent = '';
@@ -52,7 +58,7 @@
   function renderTrack(payload) {
     const track = payload.track;
     if (!track) {
-      renderFallback('Spotify is quiet right now.');
+      renderFallback('Spotify is quiet right now.', true);
       return;
     }
 
@@ -69,25 +75,26 @@
     art.alt = track.album ? `Album art for ${track.album}` : '';
 
     renderEmbed(track);
+    hasRenderedTrack = true;
   }
 
   async function fetchSpotify() {
     try {
       const response = await fetch('/api/spotify/now-playing', { cache: 'no-store' });
       if (!response.ok) {
-        renderFallback('Spotify is offline.');
+        renderFallback('Spotify is offline.', true);
         return;
       }
 
       const payload = await response.json();
       if (payload.status === 'unauthorized') {
-        renderFallback('Spotify is not connected yet.');
+        renderFallback('Spotify is not connected yet.', true);
         return;
       }
 
       renderTrack(payload);
     } catch (error) {
-      renderFallback('Spotify is offline.');
+      renderFallback('Spotify is offline.', true);
     }
   }
 
