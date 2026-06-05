@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Now Playing</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="spotify-panel" aria-live="polite" data-spotify-card>
+        <div class="spotify-panel__art">
+          <img data-spotify-art alt="">
+        </div>
+        <div class="spotify-panel__body">
+          <p class="spotify-panel__status" data-spotify-status>Loading Spotify...</p>
+          <h1 class="spotify-panel__track" data-spotify-track></h1>
+          <p class="spotify-panel__artist" data-spotify-artist></p>
+          <a class="spotify-panel__link" data-spotify-link href="" target="_blank" rel="noreferrer">Open in Spotify</a>
+        </div>
+        <div class="spotify-embed" data-spotify-embed data-spotify-embed-height="152"></div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
