@@ -10,7 +10,10 @@ const SPOTIFY_API_URL = 'https://api.spotify.com/v1';
 
 app.disable('x-powered-by');
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0
+  maxAge: 0,
+  setHeaders(res) {
+    res.setHeader('Cache-Control', 'no-cache');
+  }
 }));
 
 async function getSpotifyAccessToken() {
@@ -52,7 +55,8 @@ function formatSpotifyTrack(item, isPlaying = false) {
   const albumImages = item.album && Array.isArray(item.album.images) ? item.album.images : [];
   const albumImage = albumImages[0] ? albumImages[0].url : '';
   const releaseDate = album.release_date || '';
-  const releaseYear = releaseDate.match(/^\d{4}/) ? releaseDate.slice(0, 4) : '';
+  const releaseYearMatch = releaseDate.match(/\d{4}/);
+  const releaseYear = releaseYearMatch ? releaseYearMatch[0] : '';
 
   return {
     id: item.id,

@@ -66,7 +66,7 @@
     trackEl.textContent = track.name || '';
     artistEl.textContent = [
       (track.artists || []).join(', '),
-      track.releaseYear || ''
+      track.releaseYear || track.releaseDate || ''
     ].filter(Boolean).join(' / ');
     linkEl.href = track.trackUrl || '';
     linkEl.style.display = track.trackUrl ? 'inline-flex' : 'none';
