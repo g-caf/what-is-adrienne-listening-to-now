@@ -1,34 +1,20 @@
 (function () {
-  const spotifyCard = document.querySelector('[data-spotify-card]');
-  if (!spotifyCard) return;
-
-  const art = spotifyCard.querySelector('[data-spotify-art]');
-  const statusEl = spotifyCard.querySelector('[data-spotify-status]');
-  const trackEl = spotifyCard.querySelector('[data-spotify-track]');
-  const artistEl = spotifyCard.querySelector('[data-spotify-artist]');
-  const linkEl = spotifyCard.querySelector('[data-spotify-link]');
+  const statusEl = document.querySelector('[data-spotify-status]');
   const embedEl = document.querySelector('[data-spotify-embed]');
+  if (!statusEl || !embedEl) return;
+
   let currentEmbedTrackId = '';
   let hasRenderedTrack = false;
 
   function renderFallback(message, preserveRenderedTrack) {
     if (preserveRenderedTrack && hasRenderedTrack) {
-      statusEl.textContent = 'Last played';
+      statusEl.textContent = 'NOW PLAYING';
       return;
     }
 
     statusEl.textContent = message;
-    trackEl.textContent = '';
-    artistEl.textContent = '';
-    linkEl.href = '';
-    linkEl.style.display = 'none';
-    art.src = '';
-    art.alt = '';
-
-    if (embedEl) {
-      embedEl.innerHTML = '';
-      currentEmbedTrackId = '';
-    }
+    embedEl.innerHTML = '';
+    currentEmbedTrackId = '';
   }
 
   function renderEmbed(track) {
@@ -62,18 +48,7 @@
       return;
     }
 
-    statusEl.textContent = payload.status === 'playing' ? 'Now playing' : 'Last played';
-    trackEl.textContent = track.name || '';
-    artistEl.textContent = [
-      (track.artists || []).join(', '),
-      track.releaseYear || track.releaseDate || ''
-    ].filter(Boolean).join(' / ');
-    linkEl.href = track.trackUrl || '';
-    linkEl.style.display = track.trackUrl ? 'inline-flex' : 'none';
-
-    art.src = track.albumImage || '';
-    art.alt = track.album ? `Album art for ${track.album}` : '';
-
+    statusEl.textContent = 'NOW PLAYING';
     renderEmbed(track);
     hasRenderedTrack = true;
   }
