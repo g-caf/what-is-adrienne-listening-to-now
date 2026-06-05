@@ -13,8 +13,9 @@ The app serves the page at `/` and the data endpoint at `/api/spotify/now-playin
 
 ## Render
 
-Use this directory as the service root.
+Connect this repository directly as its own Render Web Service.
 
 - Build command: `npm install`
 - Start command: `npm start`
+- Health check path: `/healthz`
 - Environment variables: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`
